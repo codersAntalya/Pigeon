@@ -7,13 +7,13 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
-import android.support.v4.view.ViewPager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import com.antalya.coders.pigeon.utils.DummyCreator
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_main.view.*
@@ -22,9 +22,14 @@ class MainActivity : AppCompatActivity() {
 
   private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
 
+
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
+
+    DummyCreator().create()
+
 
     setSupportActionBar(toolbar)
 
@@ -74,7 +79,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
       val rootView = inflater.inflate(R.layout.fragment_main, container, false)
-      rootView.section_label.text = getString(R.string.section_format, arguments.getInt(ARG_SECTION_NUMBER))
+      rootView.section_label.text = getString(R.string.section_format, arguments?.getInt(ARG_SECTION_NUMBER))
       return rootView
     }
 
