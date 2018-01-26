@@ -13,6 +13,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import com.antalya.coders.pigeon.fragments.ChatListFragment
 import com.antalya.coders.pigeon.utils.DummyCreator
 
 import kotlinx.android.synthetic.main.activity_main.*
@@ -23,13 +24,13 @@ class MainActivity : AppCompatActivity() {
   private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
 
 
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
 
     DummyCreator().create()
 
+    NumberContainer.number = "+905309042476"
 
     setSupportActionBar(toolbar)
 
@@ -66,12 +67,24 @@ class MainActivity : AppCompatActivity() {
   inner class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
     override fun getItem(position: Int): Fragment {
-      return PlaceholderFragment.newInstance(position + 1)
+      return getFragment(position)
     }
 
     override fun getCount(): Int {
       return 3
     }
+
+    private fun getFragment(position: Int): Fragment{
+
+      return when(position){
+
+        0 -> ChatListFragment()
+        else -> PlaceholderFragment.newInstance(position + 1)
+
+      }
+
+    }
+
   }
 
   class PlaceholderFragment : Fragment() {

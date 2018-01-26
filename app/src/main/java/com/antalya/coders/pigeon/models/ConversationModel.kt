@@ -8,7 +8,7 @@ class ConversationModel {
   var conversation_id: String? = null
   var start_date: String? = null
 
-  var users: List<ConversationUserModel>? = null
+  var users: HashMap<String, ConversationUserModel>? = null
   var messages: List<MessageModel>? = null
 
 }

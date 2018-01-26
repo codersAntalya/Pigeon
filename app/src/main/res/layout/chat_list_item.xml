@@ -7,6 +7,7 @@
 
   <android.support.v4.widget.CircleImageView
     android:id="@+id/imageView"
+    android:src="@drawable/ic_default_profile"
     android:layout_weight="1"
     android:layout_width="0dp"
     android:layout_height="match_parent" />

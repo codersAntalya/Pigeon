@@ -1,19 +1,16 @@
 package com.antalya.coders.pigeon.utils
 
 import com.antalya.coders.pigeon.models.*
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.firestore.FirebaseFirestore
 
 /**
  * Created by kemalturk on 25.01.2018.
  */
 class DummyCreator {
 
-  private val database = FirebaseDatabase.getInstance()
-  private val usersRef = database.getReference("users")
-  private val conversationRef = database.getReference("conversations")
+  private val db = FirebaseFirestore.getInstance()
+  private val usersCollection = db.collection("users")
+  private val conversationCollection = db.collection("conversations")
 
   fun create(){
 
@@ -29,13 +26,15 @@ class DummyCreator {
     for (i in 0..9){
 
       val user1 = HashMap<String, String>()
-      user1.put("user_id", "+90530904247" + i)
-      user1.put("name", "Kemal Türk " + i)
-      user1.put("photo_url", " ")
-      user1.put("photo_location", " ")
-      user1.put("signup_date", "25/01/2018-19:31")
+      user1["user_id"] = "+90530904247" + i
+      user1["name"] = "Kemal Türk " + i
+      user1["photo_url"] = " "
+      user1["photo_location"] = " "
+      user1["signup_date"] = "25/01/2018-19:31"
 
-      usersRef.child(user1["user_id"]).setValue(user1)
+      usersCollection
+          .document(user1["user_id"].toString())
+          .set(user1 as Map<String, String>)
 
     }
 
@@ -43,74 +42,68 @@ class DummyCreator {
 
   private fun createConversations(){
 
-    usersRef.addListenerForSingleValueEvent(object : ValueEventListener{
-      override fun onCancelled(p0: DatabaseError?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-      }
+    usersCollection
+        .get()
+        .addOnSuccessListener { querySnapshot ->
 
-      override fun onDataChange(snapshot: DataSnapshot?) {
+          querySnapshot.documents.forEach { s ->
 
-        snapshot?.children?.forEach { c ->
+            val user = s.toObject(UserModel::class.java)
 
-          val user = c.getValue(UserModel::class.java)
+            if (user.user_id != "+905309042476"){
 
-          if (user?.user_id != "+905309042476"){
-
-            val u1 = ConversationUserModel()
-            u1.user_id = "+905309042476"
-            val u2 = ConversationUserModel()
-            u2.user_id = user?.user_id ?: ""
-
-            val users = ArrayList<ConversationUserModel>()
-            users.add(u1)
-            users.add(u2)
-
-            val conversationKey = conversationRef.push().key
-
-            val conversation = ConversationModel()
-
-            conversation.conversation_id = conversationKey
-            conversation.start_date = "25/01/2018-20:25"
-            conversation.users = users
-            conversation.messages = makeMessages(users)
+              val u1 = ConversationUserModel()
+              u1.user_id = "+905309042476"
+              val u2 = ConversationUserModel()
+              u2.user_id = user.user_id ?: ""
 
 
-            val userConversation = UserConversationModel()
-            userConversation.conversation_id = conversationKey
-            userConversation.unread_count = 0
 
-            usersRef.child(users[0].user_id + "/conversations/" + conversationKey).setValue(userConversation)
-            usersRef.child(users[1].user_id + "/conversations/" + conversationKey).setValue(userConversation)
-            conversationRef.child(conversationKey).setValue(conversation)
+              val users = HashMap<String, ConversationUserModel>()
+              users.put(u1.user_id.toString(), u1)
+              users.put(u2.user_id.toString(), u2)
 
+
+              val conversationKey = conversationCollection.document().id
+
+              val conversation = ConversationModel()
+
+              conversation.conversation_id = conversationKey
+              conversation.start_date = "25/01/2018-20:25"
+              conversation.users = users
+              conversation.messages = makeMessages(u1, u2)
+
+
+              val userConversation = UserConversationModel()
+              userConversation.conversation_id = conversationKey
+              userConversation.unread_count = 0
+
+              usersCollection.document(u1.user_id + "/conversations/" + conversationKey).set(userConversation)
+              usersCollection.document(u2.user_id + "/conversations/" + conversationKey).set(userConversation)
+              conversationCollection.document(conversationKey).set(conversation)
+
+            }
 
           }
 
-
         }
-
-
-
-
-      }
-    })
 
   }
 
 
-  private fun makeMessages(users: List<ConversationUserModel>): List<MessageModel>{
+  private fun makeMessages(u1: ConversationUserModel, u2: ConversationUserModel): List<MessageModel>{
 
     val list = ArrayList<MessageModel>()
 
     for (i in 0..9){
 
       val m1 = MessageModel()
-      m1.from = users[0].user_id
+      m1.from = u1.user_id
       m1.date = "25/01/2018-20:51"
       m1.text = "sa"
 
       val m2 = MessageModel()
-      m2.from = users[0].user_id
+      m2.from = u2.user_id
       m2.date = "25/01/2018-20:51"
       m2.text = "as knk"
 

@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import com.antalya.coders.pigeon.R
 import com.antalya.coders.pigeon.models.ConversationListModel
+import com.bumptech.glide.Glide
+import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.android.synthetic.main.chat_list_item.view.*
 
 /**
@@ -22,7 +24,11 @@ class ChatListAdapter(val list: List<ConversationListModel>): BaseAdapter() {
     view.tvDate.text = conversation.date ?: ""
     view.tvLastMessage.text = conversation.lastMessage ?: ""
 
+    val imageView = view.findViewById<CircleImageView>(R.id.imageView)
 
+    val imgUrl = conversation.imageUrl ?: ""
+
+    Glide.with(parent?.context!!).load(imgUrl).into(imageView)
 
     return view
   }
